@@ -4,6 +4,7 @@ pub use crate::*;
 
 pub mod bottom_up;
 pub mod bottom_up_analysis;
+pub mod bottom_up_recursive;
 pub mod greedy_dag;
 
 #[cfg(feature = "ilp-cbc")]

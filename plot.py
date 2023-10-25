@@ -40,6 +40,7 @@ def process(js):
         d = dir_extractor_to_data[(directory, extractor)]
         print(f"---- {directory} -- {extractor} results:")
         try:
+            tree_mean = statistics.mean(s['tree'] for s in d)
             dag_mean = statistics.mean(s['dag'] for s in d)
             micros_mean = statistics.mean(s['micros'] for s in d)
             
@@ -49,8 +50,10 @@ def process(js):
                 with_extremes = [min(xs)] + qs + [max(xs)]
                 return ", ".join(f"{x:.2f}" for x in with_extremes)
 
+            print(f"tree        mean: {tree_mean:.4f}")
             print(f"dag         mean: {dag_mean:.4f}")
             print(f"micros      mean: {micros_mean:.4f}")
+            print(f"tree   quantiles:    {quantiles('tree')}")
             print(f"dag    quantiles:    {quantiles('dag')}")
             print(f"micros quantiles: {quantiles('micros')}")
         except Exception as e:

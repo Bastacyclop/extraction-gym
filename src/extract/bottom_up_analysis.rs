@@ -1,23 +1,30 @@
 use super::*;
+use std::collections::HashSet;
 
 pub struct BottomUpAnalysisExtractor;
 
 impl Extractor for BottomUpAnalysisExtractor {
     fn extract(&self, egraph: &EGraph, _roots: &[ClassId]) -> ExtractionResult {
         // 1. build map from class to parent nodes
-        let mut parents = IndexMap::<ClassId, Vec<NodeId>>::default();
+        let mut parents = IndexMap::<ClassId, HashSet<NodeId>>::default();
         let n2c = |nid: &NodeId| egraph.nid_to_cid(nid);
 
         for class in egraph.classes().values() {
-            parents.insert(class.id.clone(), Vec::new());
+            parents.insert(class.id.clone(), HashSet::new());
         }
         for class in egraph.classes().values() {
             for node in &class.nodes {
                 for c in &egraph[node].children {
-                    parents[n2c(c)].push(node.clone());
+                    parents[n2c(c)].insert(node.clone());
                 }
             }
         }
+
+        /* debug
+        for (_, ps) in &parents {
+            let mut uniq = std::collections::HashSet::new();
+            assert!(ps.iter().cloned().all(move |x| uniq.insert(x)));
+        } */
 
         // 2. start analysis from leaves
         let mut analysis_pending = UniqueQueue::default();
